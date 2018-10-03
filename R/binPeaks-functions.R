@@ -20,10 +20,10 @@ binPeaks <- function(l, method=c("strict", "relaxed"), tolerance=0.002) {
 
   method <- match.arg(method)
 
-  ## fetch all mass
+  ## fetch all masses from all input peak lists
   mass <- unname(.unlist(lapply(l, function(x)x@mass)))
 
-  ## fetch all intensities
+  ## fetch all intensities from all input peak lists
   intensities <- .unlist(lapply(l, function(x)x@intensity))
 
   ## fetch all snr
@@ -34,9 +34,14 @@ binPeaks <- function(l, method=c("strict", "relaxed"), tolerance=0.002) {
 
   ## sort values by mass
   s <- sort.int(mass, index.return=TRUE)
-
+ 
+  ## reorder mass by sorted mass index
   mass <- s$x
+  
+  ## reorder intensities by sorted mass index
   intensities <- intensities[s$ix]
+                      
+  ## reorder snr with sorted mass index
   snr <- snr[s$ix]
   samples <- samples[s$ix]
 
@@ -54,7 +59,7 @@ binPeaks <- function(l, method=c("strict", "relaxed"), tolerance=0.002) {
   mass <- .binPeaks(mass=mass, intensities=intensities, samples=samples,
                     tolerance=tolerance, grouper=grouper)
 
-  ## resort mass (order could change if "relaxed" is used)
+  ## re-sort mass (order could change if "relaxed" is used)
   if (method == "relaxed") {
     s <- sort.int(mass, index.return=TRUE)
     mass <- s$x
